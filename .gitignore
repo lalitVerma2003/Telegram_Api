@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+
+# Virtual environment
+venv/
+env/
+
+# IDE-specific files (VSCode, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Build files
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+
+# Secrets (API keys, environment variables, etc.)
+*.env
+
+# Other system-specific files
+.DS_Store
+Thumbs.db
