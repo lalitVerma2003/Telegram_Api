@@ -17,6 +17,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, common_model):
+    telegram_id = models.IntegerField(null=True, blank=True, unique=True)
     fullname = models.CharField(max_length=255,null=True,blank=True)
     email = models.EmailField(unique=True ,null=True,blank=True)
     phone_no = models.CharField(max_length=20,null=True,blank=True, unique=True)
