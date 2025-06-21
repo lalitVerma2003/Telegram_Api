@@ -28,6 +28,8 @@ This project integrates the Telegram Bot API with a Django Rest Framework (DRF) 
 
   * [Run Celery Worker](#run-celery-worker)
 
+  * [Run Telegram Bot Script](#run-telegram-bot-script)
+
 * [API Documentation](#api-documentation)
 
   * [Base URL](#base-url)
@@ -81,14 +83,16 @@ This project integrates the Telegram Bot API with a Django Rest Framework (DRF) 
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
+│   └── celery.py (for Celery tasks)
 ├── YourApp/
 │   ├── models.py
 │   ├── views.py
 │   ├── urls.py
-│   └── tasks.py (for Celery tasks)
+│   └── serializers.py
 ├── manage.py
 ├── requirements.txt
 ├── .env.example
+├── telegram_bot.py # Assuming this is your bot's script
 └── README.md
 
 
@@ -127,20 +131,15 @@ cp .env.example .env
 
 | Variable | Description | Example Value | 
  | ----- | ----- | ----- | 
-| `SECRET_KEY` | Django secret key for cryptographic signing. | `your_django_secret_key` | 
-| `DEBUG` | Set to `False` for production. `True` for development. | `False` | 
-| `ALLOWED_HOSTS` | A comma-separated list of strings representing the host/domain names. | `localhost,127.0.0.1` | 
 | `DB_NAME` | Database name. | `your_db_name` | 
 | `DB_USER` | Database user. | `your_db_user` | 
 | `DB_PASSWORD` | Database password. | `your_db_password` | 
 | `DB_HOST` | Database host. | `localhost` | 
 | `DB_PORT` | Database port. | `5432` | 
-| `REDIS_URL` | URL for the Redis server. | `redis://localhost:6379/0` | 
+| `CELERY_BROKER_URL` | URL for the Redis server. | `redis://localhost:6379/0` | 
+| `CELERY_RESULT_BACKEND` | URL for the Redis server. | `redis://localhost:6379/0` | 
 | `TELEGRAM_BOT_TOKEN` | Your Telegram Bot API token (obtained from BotFather). | `YOUR_TELEGRAM_BOT_TOKEN_HERE` | 
-| `DJANGO_API_KEY` | The custom API key required for public endpoints. | `telegram@12345api` | 
-| `EMAIL_HOST` | SMTP host for sending emails (for Celery tasks). | `smtp.gmail.com` | 
-| `EMAIL_PORT` | SMTP port. | `587` | 
-| `EMAIL_USE_TLS` | Whether to use TLS. | `True` | 
+| `X_API_KEY` | The custom API key required for public endpoints. | `telegram@12345api` | 
 | `EMAIL_HOST_USER` | Email address for sending emails. | `your_email@example.com` | 
 | `EMAIL_HOST_PASSWORD` | Password for the email account. | `your_email_password` | 
 
@@ -185,12 +184,19 @@ The API will be accessible at `http://localhost:8000`.
 
 ### Run Celery Worker
 
-In a separate terminal, start the Celery worker to process background tasks:
+In a **separate terminal**, start the Celery worker to process background tasks:
 
-celery -A YourDjangoProjectName worker -l info
+celery -A YourDjangoProjectName worker --loglevel=info
 
 
 *(Replace `YourDjangoProjectName` with the actual name of your Django project directory, usually the one containing `settings.py`)*
+
+### Run Telegram Bot Script
+
+If your Telegram bot logic is implemented in a separate Python script (e.g., `telegram_bot.py`), run it in **another separate terminal**:
+
+python telegram_bot.py
+
 
 ## API Documentation
 
@@ -343,9 +349,7 @@ To enable the Telegram Bot functionality:
 
 2. **Set `TELEGRAM_BOT_TOKEN`**: Add this token to your `.env` file.
 
-3. **Run the Bot Script (Optional/If separate)**: If your bot logic runs as a separate script or webhook, ensure it's running and configured to communicate with your Django application for storing user data.
-
- * If your bot's `/start` command handler is part of your Django application (e.g., via webhooks), ensure your Django application is accessible to Telegram (e.g., using ngrok for local development).
+3. **Run the Bot Script**: Ensure your `telegram_bot.py` script (or equivalent) is running as described in the [How to Run Locally](#run-telegram-bot-script) section. If your bot's `/start` command handler is part of your Django application (e.g., via webhooks), ensure your Django application is accessible to Telegram (e.g., using ngrok for local development).
 
 When a user sends the `/start` command to your Telegram bot, the bot will collect their Telegram username and store it in your Django database.
 
